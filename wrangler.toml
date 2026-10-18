@@ -1,0 +1,5 @@
+name = "https://rexdashboard.levit5821.workers.dev/"
+compatibility_date = "2026-10-18"
+
+[assets}
+directory = "./public"
