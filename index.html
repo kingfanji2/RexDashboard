@@ -1,441 +1,127 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rex Dashboard</title>
-<meta name="theme-color" content="#090d18">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#100b19">
+<title>Rex Control Room</title>
 <style>
-:root {
-  --bg:#090d18;
-  --panel:#111827;
-  --panel2:#151e30;
-  --border:#263248;
-  --text:#f3f6ff;
-  --muted:#9aa8bf;
-  --cyan:#35d9ff;
-  --green:#56f0b0;
-  --purple:#b58aff;
-  --gold:#ffcf70;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;background:radial-gradient(ellipse at top right,#132b42 0,transparent 38%),var(--bg);
-  color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh
-}
-button,input,select{font:inherit}
-button,a{transition:.2s}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer}
-.layout{display:flex;min-height:100vh}
-.sidebar{
-  width:245px;flex-shrink:0;background:#0b1120eF;border-right:1px solid var(--border);
-  padding:24px 16px;display:flex;flex-direction:column;gap:25px
-}
-.brand{display:flex;align-items:center;gap:12px;padding:0 8px}
-.logo{
-  width:43px;height:43px;border-radius:14px;display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--cyan),var(--green));color:#07111b;
-  font-size:25px;font-weight:900
-}
-.brand-name{font-size:22px;font-weight:900;letter-spacing:1px}
-.brand-sub{font-size:11px;color:var(--muted);margin-top:3px}
-.nav-label{font-size:10px;letter-spacing:1.8px;color:#75839b;font-weight:800;padding:0 12px;margin-bottom:7px}
-.nav{display:grid;gap:5px}
-.nav button{
-  border:1px solid transparent;background:transparent;color:#aebbd0;text-align:left;
-  border-radius:10px;padding:12px;display:flex;gap:12px;align-items:center;width:100%
-}
-.nav button:hover,.nav button.active{background:#17253a;border-color:#283a51;color:white}
-.nav button.active{box-shadow:inset 3px 0 var(--cyan)}
-.nav-icon{width:21px;text-align:center}
-.sidebar-bottom{margin-top:auto;display:grid;gap:10px}
-.small-note{font-size:11px;color:var(--muted);line-height:1.6;padding:10px}
-.main{flex:1;min-width:0}
-.topbar{
-  height:76px;border-bottom:1px solid var(--border);display:flex;align-items:center;
-  justify-content:space-between;padding:0 30px;gap:12px;background:#0a1020aa
-}
-.top-left{display:flex;align-items:center;gap:12px}
-.page-name{font-weight:800;font-size:18px}
-.status{font-size:12px;color:var(--green);display:flex;align-items:center;gap:7px}
-.dot{width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block}
-.top-actions{display:flex;gap:9px;align-items:center}
-.content{padding:30px;max-width:1500px;margin:auto}
-.page{display:none}
-.page.active{display:block}
-h1{font-size:clamp(27px,4vw,38px);margin:0 0 10px;letter-spacing:-1px}
-h2{font-size:20px;margin:0 0 8px}
-h3{font-size:15px;margin:0 0 8px}
-p{color:var(--muted);line-height:1.65}
-.eyebrow{font-size:11px;letter-spacing:2px;color:var(--cyan);font-weight:900;margin-bottom:12px}
-.hero{
-  border:1px solid #2a5368;border-radius:20px;padding:30px;
-  background:linear-gradient(120deg,#142c40,#12192b 65%,#19203a);
-  position:relative;overflow:hidden;margin-bottom:22px
-}
-.hero:after{content:"R";position:absolute;right:35px;top:-50px;font-size:250px;
-  color:#35d9ff09;font-weight:1000;pointer-events:none}
-.hero p{max-width:650px;margin:0 0 20px}
-.actions{display:flex;flex-wrap:wrap;gap:10px;position:relative;z-index:1}
-.btn{
-  border:1px solid var(--border);background:#1a2639;color:white;padding:11px 15px;
-  border-radius:10px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px
-}
-.btn:hover{transform:translateY(-1px);border-color:#4a6886}
-.btn.primary{background:var(--cyan);color:#06111c;border-color:var(--cyan)}
-.btn.green{background:var(--green);color:#06170f;border-color:var(--green)}
-.btn.purple{background:var(--purple);color:#160d24;border-color:var(--purple)}
-.btn.gold{background:var(--gold);color:#211606;border-color:var(--gold)}
-.btn.small{padding:8px 11px;font-size:12px}
-.btn.full{width:100%}
-.grid{display:grid;gap:16px}
-.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:25px}
-.stat,.card,.tier{
-  background:linear-gradient(145deg,#131d2e,#101726);border:1px solid var(--border);
-  border-radius:15px;padding:19px;min-width:0
-}
-.stat-label{font-size:12px;color:var(--muted)}
-.stat-value{font-size:25px;font-weight:900;margin-top:10px}
-.stat-foot{font-size:11px;color:var(--muted);margin-top:6px}
-.two{grid-template-columns:1.25fr 1fr}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:28px 0 14px}
-.section-head p{margin:4px 0 0;font-size:13px}
-.pill{display:inline-block;padding:5px 9px;border-radius:99px;font-size:10px;font-weight:900;
-  background:#1e3045;color:var(--cyan);letter-spacing:.5px}
-.pill.green{background:#15362d;color:var(--green)}
-.pill.purple{background:#302343;color:var(--purple)}
-.pill.gold{background:#3b3020;color:var(--gold)}
-.list{display:grid;gap:10px}
-.list-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #243047}
-.list-row:last-child{border:0}
-.row-title{font-weight:750;font-size:13px}
-.row-sub{font-size:11px;color:var(--muted);margin-top:4px}
-.tiers{grid-template-columns:repeat(4,minmax(0,1fr))}
-.tier{display:flex;flex-direction:column;gap:12px}
-.tier.featured{border-color:#3d7792;box-shadow:0 0 25px #35d9ff0b}
-.tier h2{font-size:18px}
-.tier p{font-size:12px;margin:0}
-.tier ul{padding-left:17px;color:#c2cde0;font-size:12px;line-height:2;flex:1}
-.tier .btn{margin-top:auto}
-.tier-mark{font-size:24px}
-.searchbar{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}
-.field{
-  background:#0d1524;border:1px solid var(--border);color:white;border-radius:10px;
-  padding:12px;outline:none;min-width:0
-}
-.field:focus{border-color:var(--cyan)}
-.searchbar .field{flex:1;min-width:180px}
-.command-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-.command{background:#111b2b;border:1px solid var(--border);border-radius:12px;padding:15px}
-.command code{color:var(--cyan);font-weight:800;font-size:13px}
-.command p{font-size:12px;margin:8px 0}
-.command .meta{font-size:10px;color:var(--muted)}
-.form-card{max-width:580px}
-.form-stack{display:grid;gap:12px;margin-top:20px}
-.form-stack label{font-size:12px;color:#bdc8da;display:grid;gap:7px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0;border-bottom:1px solid #253147}
-.toggle-row p{font-size:12px;margin:5px 0 0}
-.switch{position:relative;width:44px;height:25px;flex-shrink:0}
-.switch input{opacity:0;width:0;height:0}
-.slider{position:absolute;inset:0;background:#344156;border-radius:99px;cursor:pointer}
-.slider:before{content:"";position:absolute;width:17px;height:17px;left:4px;top:4px;
-  background:white;border-radius:50%;transition:.2s}
-.switch input:checked+.slider{background:#20b9d8}
-.switch input:checked+.slider:before{transform:translateX(19px)}
-.notice{border:1px solid #66502b;background:#292318;color:#f3d9a1;border-radius:11px;
-  padding:13px;font-size:12px;line-height:1.6;margin-top:15px}
-.notice.info{border-color:#254e65;background:#122535;color:#bceeff}
-.empty{padding:25px;border:1px dashed #35445c;border-radius:12px;color:var(--muted);font-size:13px;line-height:1.7}
-footer{padding:25px 30px;border-top:1px solid var(--border);color:#75839b;font-size:11px}
-.mobile-menu{display:none}
-@media(max-width:1050px){
-  .stats,.tiers{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .command-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .two{grid-template-columns:1fr}
-}
-@media(max-width:720px){
-  .sidebar{display:none;position:fixed;z-index:10;inset:0 auto 0 0;width:260px}
-  .sidebar.open{display:flex}
-  .mobile-menu{display:inline-flex}
-  .topbar{padding:0 15px;height:65px}
-  .content{padding:18px 14px}
-  .hero{padding:22px}
-  .stats,.tiers,.command-grid{grid-template-columns:1fr}
-  .top-actions .support-link{display:none}
-  footer{padding:20px 14px}
-}
+:root{color-scheme:dark;--bg:#100b19;--panel:#1a1225;--panel2:#21172e;--line:#3a2949;--text:#f8f2ff;--muted:#b9a9c9;--orange:#ff8738;--purple:#bd79ff;--green:#67e8b1;--red:#ff7185;--gold:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#3a1c48 0,transparent 38%),radial-gradient(ellipse at 95% 12%,#492517 0,transparent 30%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#2b1d3b;color:var(--text);font-weight:700;transition:.18s}button:hover{transform:translateY(-1px);border-color:var(--purple)}button.primary{background:linear-gradient(135deg,#ff8738,#d85d39);border:0;color:#1d1020}button.good{background:#173d32;border-color:#286d56;color:#a5ffda}button.danger{background:#421d2a;border-color:#793349;color:#ff9dad}button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+input,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:#120d1b;color:var(--text);outline:none}input:focus,select:focus{border-color:var(--purple)}label{display:block;color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 7px}.field{margin:12px 0}
+.shell{max-width:1440px;margin:auto;padding:24px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:13px}.logo{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;font-size:27px;background:linear-gradient(145deg,#ff9a45,#7c3cb6);box-shadow:0 8px 28px #e76b3a35}.brand h1{margin:0;font-size:20px;letter-spacing:-.04em}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;align-items:center;gap:10px}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:12px}.hero{border:1px solid #57334e;background:linear-gradient(120deg,#2a1737ed,#21172bd9 58%,#3b211cdd);border-radius:24px;padding:28px;position:relative;overflow:hidden;margin-bottom:20px}.hero:after{content:"🎃";position:absolute;right:35px;top:12px;font-size:90px;opacity:.14;transform:rotate(12deg)}.eyebrow{color:var(--orange);font-size:11px;letter-spacing:.18em;font-weight:900;text-transform:uppercase}.hero h2{font-size:clamp(26px,4vw,42px);line-height:1.1;margin:10px 0}.hero p{color:var(--muted);max-width:650px;margin:0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 22px}.stat,.card{background:linear-gradient(145deg,#20162c,#18111f);border:1px solid var(--line);border-radius:18px;padding:18px}.stat .label{color:var(--muted);font-size:12px}.stat strong{display:block;font-size:27px;margin-top:6px;letter-spacing:-.04em}.stat small{color:var(--muted)}.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:18px}.nav{align-self:start;position:sticky;top:18px;background:#171020d9;border:1px solid var(--line);border-radius:18px;padding:10px}.nav button{width:100%;text-align:left;margin:3px 0;background:transparent;border-color:transparent;color:var(--muted)}.nav button.active{background:#382344;color:#fff;border-color:#5c3a6e}.nav .nav-title{padding:12px 10px 5px;font-size:10px;letter-spacing:.15em;color:#987fae;font-weight:900;text-transform:uppercase}.content{min-width:0}.page{display:none}.page.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:4px 0 16px}.section-head h2{margin:0;font-size:24px;letter-spacing:-.04em}.section-head p{margin:5px 0 0;color:var(--muted)}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card h3{margin:0 0 5px;font-size:16px}.card .desc{color:var(--muted);font-size:13px;margin:0 0 14px}.row{display:flex;gap:10px;align-items:center}.row>*{flex:1;min-width:0}.form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.hint{color:var(--muted);font-size:12px}.notice{padding:12px 14px;border:1px solid #5b4225;background:#302218;border-radius:12px;color:#ffdaa6;margin-bottom:15px}.notice.info{border-color:#423256;background:#21172c;color:#d8c2f6}.list{display:grid;gap:8px}.item{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--line);background:#171020;border-radius:12px;padding:12px 14px}.item strong{display:block;overflow-wrap:anywhere}.item small{color:var(--muted)}.toggle{display:flex;align-items:center;gap:10px}.toggle input{width:19px;height:19px;accent-color:var(--orange)}.tag{font-size:11px;font-weight:900;padding:4px 8px;border-radius:999px;background:#30213d;color:#d7b5ff}.tag.on{background:#153c30;color:#8ef0c5}.tag.off{background:#401d29;color:#ff9dad}.avatar-preview{width:68px;height:68px;border-radius:20px;object-fit:cover;border:2px solid #5b3d6d;background:#2b1d3b}.profile-row{display:flex;align-items:center;gap:14px;margin-bottom:15px}.empty{border:1px dashed #4c385e;border-radius:12px;padding:25px;text-align:center;color:var(--muted)}.status{min-height:20px;margin-top:12px;color:var(--green);font-size:13px}.status.error{color:#ff9dad}.code-output{display:none;margin-top:14px;padding:13px;border:1px solid #6c4c25;background:#302318;border-radius:12px;overflow-wrap:anywhere}.code-output code{font-size:14px;color:#ffdc99}.footer{color:#7f6d91;text-align:center;font-size:11px;padding:25px 0 6px}.login{max-width:520px;margin:12vh auto;padding:28px}.login h2{font-size:32px;margin:10px 0}.hidden{display:none!important}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.nav{position:static;display:flex;overflow:auto;gap:5px}.nav button{white-space:nowrap;width:auto}.nav .nav-title{display:none}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.hero:after{right:10px;font-size:60px}}
+@media(max-width:600px){.shell{padding:14px}.topbar{align-items:flex-start}.top-actions{flex-direction:column;align-items:flex-end}.cards{grid-template-columns:1fr}.hero{padding:22px}.stat,.card{padding:14px}.section-head{flex-direction:column}.item{align-items:flex-start}.item .form-actions{margin:0}}
 </style>
 </head>
 <body>
-<div class="layout">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <div class="logo">R</div>
-      <div><div class="brand-name">REX</div><div class="brand-sub">BOT CONTROL CENTRE</div></div>
-    </div>
-
-    <div>
-      <div class="nav-label">WORKSPACE</div>
-      <nav class="nav">
-        <button class="active" data-page="overview"><span class="nav-icon">⌂</span>Overview</button>
-        <button data-page="commands"><span class="nav-icon">⌘</span>Command directory</button>
-        <button data-page="servers"><span class="nav-icon">▦</span>Servers</button>
-        <button data-page="settings"><span class="nav-icon">⚙</span>Settings</button>
-      </nav>
-    </div>
-
-    <div>
-      <div class="nav-label">MEMBERSHIP</div>
-      <nav class="nav">
-        <button data-page="premium"><span class="nav-icon">♛</span>Premium tiers</button>
-        <button data-page="redeem"><span class="nav-icon">✦</span>Redeem a code</button>
-      </nav>
-    </div>
-
-    <div>
-      <div class="nav-label">REX NETWORK</div>
-      <nav class="nav">
-        <a class="btn full" href="https://discord.gg/rexsupport" target="_blank" rel="noopener">↗ Join support</a>
-        <a class="btn full" href="https://discord.com/oauth2/authorize?client_id=1550234565216436264&amp;permissions=8&amp;scope=bot%20applications.commands" target="_blank" rel="noopener">＋ Invite Rex</a>
-      </nav>
-    </div>
-
-    <div class="sidebar-bottom">
-      <div class="small-note">Rex Dashboard<br>Control your Rex experience.</div>
-    </div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <div class="top-left">
-        <button class="btn small mobile-menu" id="menuBtn" aria-label="Open menu">☰</button>
-        <div class="page-name" id="pageName">Overview</div>
-        <span class="status"><span class="dot"></span> Dashboard preview</span>
-      </div>
-      <div class="top-actions">
-        <a class="btn small support-link" href="https://discord.gg/rexsupport" target="_blank" rel="noopener">Support server</a>
-        <button class="btn primary small" id="loginBtn">Login with Discord</button>
-      </div>
-    </header>
-
-    <div class="content">
-      <section class="page active" id="page-overview">
-        <div class="hero">
-          <div class="eyebrow">THE REX NETWORK</div>
-          <h1>Your bot. Your servers. Your control.</h1>
-          <p>Manage your Rex experience from one dashboard. Explore commands, view membership tiers, redeem eligible codes and prepare your server settings.</p>
-          <div class="actions">
-            <a class="btn primary" href="https://discord.com/oauth2/authorize?client_id=1550234565216436264&amp;permissions=8&amp;scope=bot%20applications.commands" target="_blank" rel="noopener">＋ Invite Rex</a>
-            <button class="btn" data-goto="commands">⌘ Explore commands</button>
-            <button class="btn" data-goto="premium">♛ View membership</button>
-          </div>
-        </div>
-
-        <div class="grid stats">
-          <div class="stat"><div class="stat-label">BOT</div><div class="stat-value">Rex</div><div class="stat-foot">All-in-one Discord bot</div></div>
-          <div class="stat"><div class="stat-label">MEMBERSHIP TIERS</div><div class="stat-value">4</div><div class="stat-foot">Free, Premium, Priority, Ultra</div></div>
-          <div class="stat"><div class="stat-label">COMMAND DIRECTORY</div><div class="stat-value">API</div><div class="stat-foot">Live list needs backend connection</div></div>
-          <div class="stat"><div class="stat-label">ACCOUNT</div><div class="stat-value" id="accountStatus">Guest</div><div class="stat-foot">Discord login not connected yet</div></div>
-        </div>
-
-        <div class="section-head"><div><h2>Membership plans</h2><p>Four separate levels for the Rex community.</p></div><button class="btn small" data-goto="premium">View all</button></div>
-        <div class="grid tiers">
-          <div class="tier"><div class="tier-mark">◇</div><span class="pill">FREE</span><h2>Free</h2><p>Get started with Rex's available basic features.</p><ul><li>Available free commands</li><li>Community support</li><li>Eligible code redemption</li></ul><button class="btn full" data-goto="premium">Explore</button></div>
-          <div class="tier"><div class="tier-mark">♛</div><span class="pill green">PREMIUM</span><h2>Premium</h2><p>Extra features for users and servers.</p><ul><li>Premium feature access</li><li>Extra configuration options</li><li>Premium settings</li></ul><button class="btn green full" data-goto="premium">Explore</button></div>
-          <div class="tier featured"><div class="tier-mark">✦</div><span class="pill purple">PRIORITY</span><h2>Priority</h2><p>A separate tier with its own benefits.</p><ul><li>Priority-only feature section</li><li>Audit and configuration tools</li><li>Priority feature controls</li></ul><button class="btn purple full" data-goto="premium">Explore</button></div>
-          <div class="tier"><div class="tier-mark">⚡</div><span class="pill gold">PREMIUM ULTRA</span><h2>Premium Ultra</h2><p>Advanced features beyond the other tiers.</p><ul><li>Ultra-only feature section</li><li>Advanced security tools</li><li>Extra monitoring and controls</li></ul><button class="btn gold full" data-goto="premium">Explore</button></div>
-        </div>
-
-        <div class="section-head"><div><h2>Quick links</h2><p>Go straight to the Rex community or bot.</p></div></div>
-        <div class="grid two">
-          <div class="card"><h3>Invite Rex to your server</h3><p>Add Rex using Discord's authorisation page. Review the permissions before confirming.</p><a class="btn primary" href="https://discord.com/oauth2/authorize?client_id=1550234565216436264&amp;permissions=8&amp;scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Rex ↗</a></div>
-          <div class="card"><h3>Rex Support Server</h3><p>Visit the official support community for assistance and updates.</p><a class="btn" href="https://discord.gg/rexsupport" target="_blank" rel="noopener">Join support ↗</a></div>
-        </div>
-      </section>
-
-      <section class="page" id="page-commands">
-        <div class="eyebrow">REX DIRECTORY</div>
-        <h1>Command directory</h1>
-        <p>Search and browse commands. The live directory must be loaded from Rex's command API to guarantee that every entry matches the current bot.</p>
-        <div class="searchbar">
-          <input class="field" id="commandSearch" placeholder="Search commands..." aria-label="Search commands">
-          <select class="field" id="commandCategory" aria-label="Command category">
-            <option value="all">All categories</option>
-            <option value="General">General</option>
-            <option value="Moderation">Moderation</option>
-            <option value="Tickets">Tickets</option>
-            <option value="Economy">Economy</option>
-            <option value="Premium">Premium</option>
-            <option value="Priority">Priority</option>
-            <option value="Premium Ultra">Premium Ultra</option>
-            <option value="Owner">Owner</option>
-          </select>
-        </div>
-        <div class="notice info">Preview directory: these are example entries, not a verified export of every command. The backend connection will replace them with Rex's actual synced commands.</div>
-        <div class="section-head"><div><h2>Example commands</h2><p id="commandCount">Showing preview entries</p></div></div>
-        <div class="grid command-grid" id="commandGrid">
-          <div class="command" data-category="General"><code>/help</code><p>View available bot help and command guidance.</p><div class="meta">General · Example</div></div>
-          <div class="command" data-category="General"><code>/aboutme</code><p>View information about Rex.</p><div class="meta">General · Example</div></div>
-          <div class="command" data-category="Moderation"><code>/lockdown</code><p>Manage server lockdown, subject to permissions.</p><div class="meta">Moderation · Example</div></div>
-          <div class="command" data-category="Tickets"><code>/ticket</code><p>Access the ticket system, if enabled.</p><div class="meta">Tickets · Example</div></div>
-          <div class="command" data-category="Economy"><code>/games</code><p>Browse available economy games.</p><div class="meta">Economy · Example</div></div>
-          <div class="command" data-category="Premium"><code>/redeem</code><p>Redeem an eligible membership code through Rex.</p><div class="meta">Premium · Example</div></div>
-          <div class="command" data-category="Priority"><code>Priority settings</code><p>Priority-only controls will appear when confirmed by the backend.</p><div class="meta">Priority · Dashboard feature</div></div>
-          <div class="command" data-category="Premium Ultra"><code>Ultra settings</code><p>Ultra-only controls will appear when confirmed by the backend.</p><div class="meta">Premium Ultra · Dashboard feature</div></div>
-          <div class="command" data-category="Owner"><code>Owner tools</code><p>Restricted tools should only be exposed to authorised owners.</p><div class="meta">Owner · Example</div></div>
-        </div>
-        <div class="empty" id="noCommands" style="display:none;margin-top:15px">No preview entries match that search. Connect the backend to load the actual command list.</div>
-      </section>
-
-      <section class="page" id="page-servers">
-        <div class="eyebrow">SERVER MANAGEMENT</div>
-        <h1>Your servers</h1>
-        <p>After secure Discord login and bot permissions are connected, servers where you can manage Rex will appear here.</p>
-        <div class="card form-card">
-          <h2>Server list</h2>
-          <div class="empty" style="margin-top:15px">No server data loaded.<br><br>The backend must verify your Discord identity, retrieve your permitted servers and check whether Rex is installed. This page won't invent server names or permissions.</div>
-          <button class="btn primary" style="margin-top:15px" id="serverLoginBtn">Connect Discord account</button>
-        </div>
-      </section>
-
-      <section class="page" id="page-settings">
-        <div class="eyebrow">CONTROL CENTRE</div>
-        <h1>Dashboard settings</h1>
-        <p>These switches currently change this page's preview only. They do not change settings on the live Discord bot yet.</p>
-        <div class="grid two">
-          <div class="card">
-            <h2>General preferences</h2>
-            <div class="toggle-row"><div><strong>Dashboard notifications</strong><p>Preview preference stored for this page session.</p></div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></div>
-            <div class="toggle-row"><div><strong>Show command descriptions</strong><p>Display descriptions in the command directory.</p></div><label class="switch"><input type="checkbox" checked id="descriptionToggle"><span class="slider"></span></label></div>
-            <div class="toggle-row"><div><strong>Compact cards</strong><p>Use a denser dashboard layout.</p></div><label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label></div>
-          </div>
-          <div class="card">
-            <h2>Membership settings</h2>
-            <div class="toggle-row"><div><strong>Premium</strong><p>Access must be verified by Rex.</p></div><span class="pill green">VERIFICATION REQUIRED</span></div>
-            <div class="toggle-row"><div><strong>Priority</strong><p>Separate Priority entitlements.</p></div><span class="pill purple">VERIFICATION REQUIRED</span></div>
-            <div class="toggle-row"><div><strong>Premium Ultra</strong><p>Separate Ultra entitlements.</p></div><span class="pill gold">VERIFICATION REQUIRED</span></div>
-            <div class="notice">A website toggle must never grant membership or change live security settings without server-side authorisation.</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="page-premium">
-        <div class="eyebrow">MEMBERSHIP CENTRE</div>
-        <h1>Choose your Rex tier</h1>
-        <p>Each tier has its own section. Actual benefits and access must be confirmed by the current bot configuration.</p>
-        <div class="grid tiers">
-          <div class="tier"><div class="tier-mark">◇</div><span class="pill">TIER 01</span><h2>Free</h2><p>Core available features.</p><ul><li>Free commands</li><li>Community access</li><li>Available basic tools</li></ul><button class="btn full" data-goto="commands">Browse commands</button></div>
-          <div class="tier"><div class="tier-mark">♛</div><span class="pill green">TIER 02</span><h2>Premium</h2><p>Premium membership.</p><ul><li>Premium features</li><li>Additional configuration</li><li>Premium settings</li></ul><button class="btn green full" data-goto="redeem">Redeem a code</button></div>
-          <div class="tier featured"><div class="tier-mark">✦</div><span class="pill purple">TIER 03</span><h2>Priority</h2><p>A distinct feature tier.</p><ul><li>Priority-only features</li><li>Server and member audits</li><li>Configuration previews</li><li>Appeal-check tools</li></ul><button class="btn purple full" data-goto="redeem">Redeem a code</button></div>
-          <div class="tier"><div class="tier-mark">⚡</div><span class="pill gold">TIER 04</span><h2>Premium Ultra</h2><p>Advanced membership.</p><ul><li>Ultra-only features</li><li>Security health overview</li><li>Configuration snapshots</li><li>Advanced alerts and branding</li></ul><button class="btn gold full" data-goto="redeem">Redeem a code</button></div>
-        </div>
-        <div class="notice info">These descriptions are a dashboard outline based on your requested tiers. The current bot's implementation and entitlement rules must be checked before showing features as active.</div>
-      </section>
-
-      <section class="page" id="page-redeem">
-        <div class="eyebrow">MEMBERSHIP ACTIVATION</div>
-        <h1>Redeem a code</h1>
-        <p>Enter your membership code below. Secure redemption must be processed by the Rex backend, which checks validity, expiry, usage limits and the tier being granted.</p>
-        <div class="card form-card">
-          <h2>Redeem membership</h2>
-          <form class="form-stack" id="redeemForm">
-            <label>Membership code
-              <input class="field" id="redeemCode" name="code" placeholder="Enter your code" required maxlength="160" autocomplete="off">
-            </label>
-            <label>Account
-              <input class="field" value="Login with Discord first" readonly>
-            </label>
-            <button class="btn primary full" type="submit">Check and redeem code</button>
-          </form>
-          <div class="notice">Demo mode: this form does not validate or activate codes yet. No membership will be granted by this page until the secure backend is connected.</div>
-        </div>
-      </section>
-    </div>
-
-    <footer>
-      <strong>REX DASHBOARD</strong> · Community control centre<br>
-      This front end is a preview. Live account, server, command and membership data requires a secure backend.
-    </footer>
-  </main>
+<div id="loginView" class="shell">
+  <div class="login card">
+    <div class="logo">🎃</div><div class="eyebrow" style="margin-top:18px">Rex · Owner access</div>
+    <h2>Enter the Control Room</h2>
+    <p class="desc">A Halloween-themed command centre for your Discord bot. Sign in with Discord; only the configured Rex owner account can open the dashboard.</p>
+    <div class="notice info">🔐 Discord OAuth is required. Do not put your bot token or client secret in this HTML file.</div>
+    <button class="primary" id="loginBtn">Continue with Discord</button>
+    <div id="loginStatus" class="status"></div>
+  </div>
 </div>
-
+<div id="appView" class="shell hidden">
+  <header class="topbar">
+    <div class="brand"><div class="logo">🎃</div><div><h1>REX <span style="color:var(--orange)">CONTROL ROOM</span></h1><p>Owner dashboard · Spooky season build</p></div></div>
+    <div class="top-actions"><span class="pill">🕸️ Secure owner session</span><button id="logoutBtn">Sign out</button></div>
+  </header>
+  <section class="hero"><div class="eyebrow">✦ October operations centre ✦</div><h2>Welcome back, <span id="welcomeName">Rex Owner</span>.</h2><p>Manage slash-command availability, create redeemable Premium / Priority / Ultra codes, and customise Rex's profile from one place.</p></section>
+  <section class="stats">
+    <div class="stat"><div class="label">COMMAND CONTROLS</div><strong>⌘</strong><small>Enable / disable</small></div>
+    <div class="stat"><div class="label">PREMIUM</div><strong style="color:var(--gold)">💎</strong><small>Redeemable codes</small></div>
+    <div class="stat"><div class="label">PRIORITY</div><strong style="color:#8fc5ff">⭐</strong><small>Middle tier</small></div>
+    <div class="stat"><div class="label">ULTRA</div><strong style="color:var(--purple)">👑</strong><small>Highest tier</small></div>
+  </section>
+  <div class="layout">
+    <nav class="nav">
+      <div class="nav-title">Dashboard</div>
+      <button class="active" data-page="overview">🏚️ Overview</button>
+      <button data-page="commands">⌘ Command controls</button>
+      <button data-page="codes">💎 Redeemable codes</button>
+      <button data-page="profile">🦖 Rex identity</button>
+      <button data-page="settings">⚙️ Setup & status</button>
+    </nav>
+    <main class="content">
+      <section class="page active" id="page-overview">
+        <div class="section-head"><div><h2>Dashboard overview</h2><p>Your spooky command centre at a glance.</p></div><button id="refreshBtn">↻ Refresh</button></div>
+        <div class="cards">
+          <div class="card"><h3>⌘ Command controls</h3><p class="desc">Temporarily block a slash command or restore it when ready.</p><button class="primary" data-jump="commands">Manage commands →</button></div>
+          <div class="card"><h3>🎟️ Tier codes</h3><p class="desc">Generate active codes with an expiry and redemption limit.</p><button class="primary" data-jump="codes">Create a code →</button></div>
+          <div class="card"><h3>🦖 Rex identity</h3><p class="desc">Change the bot username and avatar using the bot token on the server.</p><button data-jump="profile">Edit identity →</button></div>
+          <div class="card"><h3>🛡️ Security notes</h3><p class="desc">Owner-only access, server-side secrets, and a shared JSON data store.</p><span class="tag">OWNER ONLY</span></div>
+        </div>
+      </section>
+      <section class="page" id="page-commands">
+        <div class="section-head"><div><h2>Command controls</h2><p>Disable a command by putting it in maintenance, or remove that lock to enable it again.</p></div><button id="loadCommandsBtn">↻ Reload</button></div>
+        <div class="notice">⚠️ Use the command's slash name, without the leading <code>/</code>. For subcommands, use the full path, e.g. <code>fun utility support</code>. The bot must read the same <code>data.json</code>.</div>
+        <div class="card">
+          <div class="row"><div class="field"><label for="commandName">Slash command path</label><input id="commandName" placeholder="e.g. ticket or fun utility support"></div><div class="field"><label for="commandReason">Reason (optional)</label><input id="commandReason" placeholder="Maintenance / temporary disable"></div></div>
+          <div class="form-actions"><button class="danger" id="disableCommandBtn">⛔ Disable command</button><button class="good" id="enableCommandBtn">✓ Enable command</button></div>
+          <div id="commandStatus" class="status"></div>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Currently disabled</h3><p class="desc">These locks are read from Rex's shared data file.</p><div id="maintenanceList" class="list"><div class="empty">Loading…</div></div></div>
+      </section>
+      <section class="page" id="page-codes">
+        <div class="section-head"><div><h2>Redeemable tier codes</h2><p>Generate codes for the existing Rex redemption system.</p></div><button id="loadCodesBtn">↻ Reload</button></div>
+        <div class="notice info">⭐ Priority includes Premium and sits below Ultra. 👑 Ultra is a separate higher tier. Codes created here are immediately redeemable and use the same <code>premium.json</code> file as the bot.</div>
+        <div class="card">
+          <div class="row"><div class="field"><label for="tier">Tier</label><select id="tier"><option value="premium">💎 Premium</option><option value="priority">⭐ Priority</option><option value="ultra">👑 Ultra</option></select></div><div class="field"><label for="duration">Duration</label><select id="duration"><option value="1 day">1 day</option><option value="7 days" selected>7 days</option><option value="30 days">30 days</option><option value="90 days">90 days</option><option value="1 year">1 year</option><option value="lifetime">Lifetime</option></select></div></div>
+          <div class="row"><div class="field"><label for="validDays">Code validity (days)</label><input type="number" id="validDays" value="5" min="1" max="365"></div><div class="field"><label for="redemptionLimit">Maximum redemptions</label><input type="number" id="redemptionLimit" value="1" min="1" max="1000"></div></div>
+          <div class="form-actions"><button class="primary" id="generateCodeBtn">🎃 Generate redeemable code</button></div>
+          <div id="codeStatus" class="status"></div><div id="codeOutput" class="code-output"><div class="hint">NEW CODE · Copy it now</div><code id="generatedCode"></code><div class="form-actions"><button id="copyCodeBtn">Copy code</button></div></div>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Recent codes</h3><p class="desc">Only safe metadata is shown; codes are masked after creation.</p><div id="codesList" class="list"><div class="empty">Loading…</div></div></div>
+      </section>
+      <section class="page" id="page-profile">
+        <div class="section-head"><div><h2>Rex identity</h2><p>Customise how Rex appears on Discord.</p></div></div>
+        <div class="card">
+          <div class="profile-row"><img id="avatarPreview" class="avatar-preview" alt="Rex avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' rx='18' fill='%233b214c'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-size='42'%3E🦖%3C/text%3E%3C/svg%3E"><div><h3 id="profileCurrentName">Rex</h3><p class="desc">Preview · current bot identity</p></div></div>
+          <div class="field"><label for="botName">New bot name</label><input id="botName" maxlength="32" placeholder="Rex"></div>
+          <div class="field"><label for="avatarUrl">Avatar image URL (optional)</label><input id="avatarUrl" type="url" placeholder="https://example.com/rex.png"><p class="hint">Use a public HTTPS image URL. Discord will fetch it from the server.</p></div>
+          <div class="field"><label for="avatarFile">Or upload an avatar image</label><input id="avatarFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp"></div>
+          <div class="form-actions"><button class="primary" id="saveProfileBtn">🦖 Update Rex profile</button></div>
+          <div class="notice" style="margin-top:14px">Changing the bot username/avatar calls Discord's bot profile API. The token stays on the backend and is never sent to this page.</div>
+          <div id="profileStatus" class="status"></div>
+        </div>
+      </section>
+      <section class="page" id="page-settings">
+        <div class="section-head"><div><h2>Setup & status</h2><p>Connection status and deployment requirements.</p></div><button id="statusRefreshBtn">↻ Check</button></div>
+        <div class="card"><h3>Backend health</h3><div id="healthStatus" class="list"><div class="empty">Checking…</div></div><div class="hint" style="margin-top:12px">Keep <code>DISCORD_CLIENT_SECRET</code>, <code>DASHBOARD_SECRET</code> and <code>TOKEN</code> in your host's environment variables, never in GitHub.</div></div>
+        <div class="card" style="margin-top:14px"><h3>Deploy checklist</h3><ul class="hint"><li>Run the Python backend on a Python host with persistent storage.</li><li>Set Discord OAuth redirect URI to your backend's <code>/auth/callback</code>.</li><li>Keep this page and the bot pointed at the same <code>data.json</code> and <code>premium.json</code>.</li><li>Cloudflare Pages can host the HTML, but it cannot run this Flask app directly as a Python service.</li></ul></div>
+      </section>
+    </main>
+  </div>
+  <div class="footer">REX CONTROL ROOM · MADE FOR SPOOKY SEASON 🎃</div>
+</div>
 <script>
-const pageTitles = {
-  overview:"Overview",
-  commands:"Command directory",
-  servers:"Servers",
-  settings:"Settings",
-  premium:"Membership tiers",
-  redeem:"Redeem a code"
-};
-
-function showPage(name){
-  if(!pageTitles[name]) return;
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById("page-"+name).classList.add("active");
-  document.querySelectorAll("[data-page]").forEach(b=>{
-    b.classList.toggle("active",b.dataset.page===name);
-  });
-  document.getElementById("pageName").textContent=pageTitles[name];
-  document.getElementById("sidebar").classList.remove("open");
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-document.querySelectorAll("[data-page]").forEach(b=>{
-  b.addEventListener("click",()=>showPage(b.dataset.page));
-});
-document.querySelectorAll("[data-goto]").forEach(b=>{
-  b.addEventListener("click",()=>showPage(b.dataset.goto));
-});
-
-document.getElementById("menuBtn").addEventListener("click",()=>{
-  document.getElementById("sidebar").classList.toggle("open");
-});
-
-function connectDiscord(){
-  alert("Discord login is not connected yet. A secure backend and registered OAuth redirect URL are required. No account has been logged in.");
-}
-document.getElementById("loginBtn").addEventListener("click",connectDiscord);
-document.getElementById("serverLoginBtn").addEventListener("click",connectDiscord);
-
-function filterCommands(){
-  const search=document.getElementById("commandSearch").value.toLowerCase().trim();
-  const category=document.getElementById("commandCategory").value;
-  const cards=[...document.querySelectorAll("#commandGrid .command")];
-  let count=0;
-  cards.forEach(card=>{
-    const matchesText=card.innerText.toLowerCase().includes(search);
-    const matchesCategory=category==="all"||card.dataset.category===category;
-    card.style.display=matchesText&&matchesCategory?"block":"none";
-    if(matchesText&&matchesCategory) count++;
-  });
-  document.getElementById("noCommands").style.display=count?"none":"block";
-  document.getElementById("commandCount").textContent=count+" preview entries shown";
-}
-document.getElementById("commandSearch").addEventListener("input",filterCommands);
-document.getElementById("commandCategory").addEventListener("change",filterCommands);
-
-document.getElementById("descriptionToggle").addEventListener("change",e=>{
-  document.querySelectorAll(".command p").forEach(p=>{
-    p.style.display=e.target.checked?"block":"none";
-  });
-});
-document.getElementById("compactToggle").addEventListener("change",e=>{
-  document.querySelectorAll(".stat,.card,.tier,.command").forEach(el=>{
-    el.style.padding=e.target.checked?"12px":"";
-  });
-});
-
-document.getElementById("redeemForm").addEventListener("submit",e=>{
-  e.preventDefault();
-  const code=document.getElementById("redeemCode").value.trim();
-  if(!code){
-    alert("Enter a code first.");
-    return;
-  }
-  alert("Redemption is not connected yet. This page has not checked or activated your code. Connect the secure Rex backend before using this feature.");
-});
+const $=id=>document.getElementById(id);
+async function api(path, options={}){const r=await fetch(path,{credentials:'same-origin',...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d}
+function status(id,msg,error=false){const e=$(id);e.textContent=msg;e.classList.toggle('error',error)}
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+name));document.querySelectorAll('.nav button[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));}
+document.querySelectorAll('.nav button[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.jump)));
+async function init(){try{const d=await api('/api/me');if(!d.authenticated){$('loginView').classList.remove('hidden');$('appView').classList.add('hidden');return} $('loginView').classList.add('hidden');$('appView').classList.remove('hidden');$('welcomeName').textContent=d.user.global_name||d.user.username;$('profileCurrentName').textContent=d.bot?.username||'Rex';$('botName').value=d.bot?.username||'Rex';if(d.bot?.avatar)$('avatarPreview').src=d.bot.avatar;await refreshAll()}catch(e){$('loginView').classList.remove('hidden');status('loginStatus',e.message,true)}}
+$('loginBtn').onclick=()=>{location.href='/auth/login'};
+$('logoutBtn').onclick=async()=>{try{await api('/auth/logout',{method:'POST',body:'{}'})}finally{location.reload()}};
+$('refreshBtn').onclick=refreshAll;$('loadCommandsBtn').onclick=loadCommands;$('loadCodesBtn').onclick=loadCodes;$('statusRefreshBtn').onclick=loadHealth;
+async function refreshAll(){await Promise.allSettled([loadCommands(),loadCodes(),loadHealth()])}
+async function loadCommands(){try{const d=await api('/api/commands');const root=$('maintenanceList');root.innerHTML='';const entries=Object.entries(d.disabled||{});if(!entries.length){root.innerHTML='<div class="empty">🎃 All tracked commands are enabled.</div>';return}for(const [name,rec] of entries){const el=document.createElement('div');el.className='item';const left=document.createElement('div');left.innerHTML=`<strong>/${escapeHtml(name)}</strong><small>${escapeHtml(rec.reason||'Disabled')}</small>`;const b=document.createElement('button');b.className='good';b.textContent='Enable';b.onclick=async()=>{try{await api('/api/commands/enable',{method:'POST',body:JSON.stringify({name})});await loadCommands()}catch(e){status('commandStatus',e.message,true)}};el.append(left,b);root.append(el)}}catch(e){$('maintenanceList').innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
+$('disableCommandBtn').onclick=async()=>{const name=$('commandName').value.trim();if(!name)return status('commandStatus','Enter a command path first.',true);try{await api('/api/commands/disable',{method:'POST',body:JSON.stringify({name,reason:$('commandReason').value.trim()})});status('commandStatus',`/${name} is now disabled.`);await loadCommands()}catch(e){status('commandStatus',e.message,true)}};
+$('enableCommandBtn').onclick=async()=>{const name=$('commandName').value.trim();if(!name)return status('commandStatus','Enter a command path first.',true);try{await api('/api/commands/enable',{method:'POST',body:JSON.stringify({name})});status('commandStatus',`/${name} is enabled.`);await loadCommands()}catch(e){status('commandStatus',e.message,true)}};
+$('generateCodeBtn').onclick=async()=>{try{$('generateCodeBtn').disabled=true;const d=await api('/api/codes',{method:'POST',body:JSON.stringify({tier:$('tier').value,duration:$('duration').value,valid_days:Number($('validDays').value),limit:Number($('redemptionLimit').value)})});$('generatedCode').textContent=d.code;$('codeOutput').style.display='block';status('codeStatus',`Created ${d.tier} code · ${d.duration} · ${d.limit} use(s).`);await loadCodes()}catch(e){status('codeStatus',e.message,true)}finally{$('generateCodeBtn').disabled=false}};
+$('copyCodeBtn').onclick=async()=>{try{await navigator.clipboard.writeText($('generatedCode').textContent);status('codeStatus','Code copied to clipboard.')}catch{status('codeStatus','Select and copy the code manually.',true)}};
+async function loadCodes(){try{const d=await api('/api/codes');const root=$('codesList');root.innerHTML='';if(!d.codes?.length){root.innerHTML='<div class="empty">No codes found yet. Create your first one above.</div>';return}for(const c of d.codes){const el=document.createElement('div');el.className='item';const left=document.createElement('div');left.innerHTML=`<strong>${escapeHtml(c.tierLabel)} · ${escapeHtml(c.masked)}</strong><small>${escapeHtml(c.duration)} · ${c.uses}/${c.limit} uses · ${escapeHtml(c.status)}</small>`;const tag=document.createElement('span');tag.className='tag '+(c.status==='active'?'on':'off');tag.textContent=c.status;el.append(left,tag);root.append(el)}}catch(e){$('codesList').innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
+$('avatarFile').addEventListener('change',()=>{const f=$('avatarFile').files[0];if(f)$('avatarPreview').src=URL.createObjectURL(f)});
+$('saveProfileBtn').onclick=async()=>{try{$('saveProfileBtn').disabled=true;let avatar_url=$('avatarUrl').value.trim();const file=$('avatarFile').files[0];if(file){if(file.size>5*1024*1024)throw new Error('Avatar file must be 5 MB or smaller.');avatar_url='data:'+file.type+';base64,'+await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(file)})}const d=await api('/api/profile',{method:'POST',body:JSON.stringify({username:$('botName').value.trim(),avatar:avatar_url||null})});$('profileCurrentName').textContent=d.username;$('botName').value=d.username;if(d.avatar)$('avatarPreview').src=d.avatar;status('profileStatus','Rex profile updated successfully.')}catch(e){status('profileStatus',e.message,true)}finally{$('saveProfileBtn').disabled=false}};
+async function loadHealth(){try{const d=await api('/api/health');$('healthStatus').innerHTML='';for(const [k,v] of Object.entries(d.checks)){const el=document.createElement('div');el.className='item';const left=document.createElement('div');left.innerHTML=`<strong>${escapeHtml(k)}</strong><small>${escapeHtml(v.detail||'')}</small>`;const tag=document.createElement('span');tag.className='tag '+(v.ok?'on':'off');tag.textContent=v.ok?'READY':'CHECK';el.append(left,tag);$('healthStatus').append(el)}}catch(e){$('healthStatus').innerHTML=`<div class="empty">${escapeHtml(e.message)}</div>`}}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+init();
 </script>
 </body>
 </html>
